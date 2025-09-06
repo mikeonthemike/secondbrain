@@ -13,3 +13,6 @@ markdown>=3.4.0         # Markdown processing
 pytest>=7.0.0
 black>=22.0.0
 flake8>=5.0.0
+
+# Migration dependencies
+pandoc>=2.2

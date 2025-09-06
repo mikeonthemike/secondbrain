@@ -246,14 +246,12 @@ If you get "command not found" errors:
    - Manually add Python to your PATH environment variable
    - Use the full path: `C:\Python39\python.exe setup.py`
 
-## Migration from Notion
+## Migrating existing notes to Obsidian
 
-If you're migrating from the previous Notion-based system:
+### .txt
+1. Manually
 
-1. Export your Notion database
-2. Use the migration tools (coming soon)
-3. Verify data integrity
-4. Update your workflow
+2. Bulk migration
 
 ## Development
 
