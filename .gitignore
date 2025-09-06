@@ -51,3 +51,9 @@ logs/
 # Temporary files
 *.tmp
 *.temp
+
+# Staging directory
+staging/
+
+# Config file
+config/vault_config.json
