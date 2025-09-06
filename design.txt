@@ -1,0 +1,223 @@
+# Building Your Second Brain: A Complete Guide
+
+## Core Principles
+- **Capture Everything**: Save any piece of information that resonates with you
+- **Organize for Action**: Structure information in a way that supports your projects and goals
+- **Share Your Learning**: Distill and express your knowledge to solidify understanding
+
+## Setting Up Your System
+
+### 1. Choose Your Tools
+Select a note-taking app that supports:
+- Quick capture
+- Easy organization
+- Full-text search
+- Link between notes
+- Multi-platform sync
+
+Recommended options:
+- Obsidian (free, local-first, markdown-based)
+- Notion (collaborative, all-in-one workspace)
+- Evernote (established, feature-rich)
+- Roam Research (bidirectional linking focus)
+
+### 2. Create Your Structure
+
+Use the PARA method to organize your notes:
+- **Projects**: Active tasks with deadlines
+- **Areas**: Ongoing responsibilities
+- **Resources**: Topics of interest
+- **Archives**: Completed or inactive items
+
+### 3. Capture Workflow
+
+Implement these practices:
+1. **Quick Capture**: Create an inbox for rapid note-taking
+2. **Progressive Summarization**: 
+   - Highlight key points
+   - Bold essential insights
+   - Extract critical takeaways
+3. **Link Related Ideas**: Connect notes to build a knowledge network
+
+### 4. Maintenance Practices
+
+Weekly review:
+- Process inbox items
+- Update project notes
+- Archive completed projects
+- Review and refine existing notes
+
+Monthly review:
+- Evaluate organization system
+- Identify knowledge gaps
+- Plan learning projects
+- Clean up unused notes
+
+## Making It Work Long-Term
+
+### Daily Habits
+1. Morning review of current projects
+2. Capture interesting information throughout the day
+3. Evening consolidation of quick notes
+
+### Project Workflow
+1. Create a project note
+2. Link relevant reference materials
+3. Break down into actionable steps
+4. Track progress and outcomes
+5. Archive and reflect when complete
+
+### Knowledge Development
+1. Create topic hubs for main interests
+2. Maintain literature notes for books and articles
+3. Write permanent notes for key insights
+4. Develop original content from your notes
+
+## Common Pitfalls to Avoid
+
+- Over-organizing without acting
+- Collecting without processing
+- Complex systems that slow you down
+- Perfectionism in note organization
+- Not reviewing or using captured information
+
+## Success Metrics
+
+Track these indicators:
+- Number of notes reviewed weekly
+- Projects completed using your system
+- Ideas developed into content
+- Time saved finding information
+- Reduced stress about information management
+
+Possible code:
+from notion_client import Client
+import os
+import google.auth
+from google.auth.transport.requests import Request
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+import base64
+import email
+from datetime import datetime
+
+class SecondBrainAutomation:
+    def __init__(self):
+        # Initialize Notion client
+        self.notion = Client(auth=os.environ["NOTION_TOKEN"])
+        self.database_id = os.environ["NOTION_DATABASE_ID"]
+        
+        # Initialize Gmail API
+        self.SCOPES = ['https://www.googleapis.com/auth/gmail.modify']
+        self.gmail = self.gmail_authenticate()
+
+    def gmail_authenticate(self):
+        creds = None
+        if os.path.exists('token.pickle'):
+            with open('token.pickle', 'rb') as token:
+                creds = pickle.load(token)
+        if not creds or not creds.valid:
+            if creds and creds.expired and creds.refresh_token:
+                creds.refresh(Request())
+            else:
+                flow = InstalledAppFlow.from_client_secrets_file(
+                    'credentials.json', self.SCOPES)
+                creds = flow.run_local()
+            with open('token.pickle', 'wb') as token:
+                pickle.dump(creds, token)
+        return build('gmail', 'v1', credentials=creds)
+
+    def process_email(self, message):
+        """Process an email and create a Notion page."""
+        # Get email content
+        msg = self.gmail.users().messages().get(
+            userId='me', id=message['id'], format='full'
+        ).execute()
+        
+        # Extract headers
+        headers = msg['payload']['headers']
+        subject = next(h['value'] for h in headers if h['name'] == 'Subject')
+        sender = next(h['value'] for h in headers if h['name'] == 'From')
+        date = next(h['value'] for h in headers if h['name'] == 'Date')
+        
+        # Get body
+        if 'parts' in msg['payload']:
+            body = msg['payload']['parts'][0]['body'].get('data', '')
+        else:
+            body = msg['payload']['body'].get('data', '')
+        
+        if body:
+            body = base64.urlsafe_b64decode(body).decode('utf-8')
+
+        # Create Notion page
+        self.create_notion_page(subject, sender, date, body)
+        
+        # Add label to email
+        self.gmail.users().messages().modify(
+            userId='me',
+            id=message['id'],
+            body={'addLabelIds': ['Label_Processed']}
+        ).execute()
+
+    def create_notion_page(self, subject, sender, date, content):
+        """Create a new page in Notion database."""
+        new_page = {
+            "parent": {"database_id": self.database_id},
+            "properties": {
+                "Title": {
+                    "title": [{"text": {"content": subject}}]
+                },
+                "Sender": {
+                    "rich_text": [{"text": {"content": sender}}]
+                },
+                "Date": {
+                    "date": {
+                        "start": datetime.strptime(
+                            date, "%a, %d %b %Y %H:%M:%S %z"
+                        ).isoformat()
+                    }
+                },
+                "Status": {
+                    "select": {
+                        "name": "To Process"
+                    }
+                },
+                "Type": {
+                    "select": {
+                        "name": "Email"
+                    }
+                }
+            },
+            "children": [{
+                "object": "block",
+                "type": "paragraph",
+                "paragraph": {
+                    "rich_text": [{
+                        "text": {"content": content}
+                    }]
+                }
+            }]
+        }
+        
+        self.notion.pages.create(**new_page)
+
+    def run(self):
+        """Main execution loop."""
+        try:
+            # Search for unprocessed emails
+            results = self.gmail.users().messages().list(
+                userId='me',
+                q='label:inbox -label:processed'
+            ).execute()
+            
+            messages = results.get('messages', [])
+            
+            for message in messages:
+                self.process_email(message)
+                
+        except Exception as e:
+            print(f"Error occurred: {e}")
+
+if __name__ == "__main__":
+    automation = SecondBrainAutomation()
+    automation.run()
