@@ -9,6 +9,13 @@ beautifulsoup4>=4.11.0  # Web scraping
 python-dateutil>=2.8.0  # Date handling
 markdown>=3.4.0         # Markdown processing
 
+# AI/ML dependencies for enhanced auto-organizer
+openai>=1.0.0           # OpenAI API for advanced content analysis
+sentence-transformers>=2.2.0  # Semantic embeddings
+scikit-learn>=1.3.0     # Machine learning utilities
+numpy>=1.24.0           # Numerical computing
+pandas>=2.0.0           # Data manipulation
+
 # Development dependencies
 pytest>=7.0.0
 black>=22.0.0
