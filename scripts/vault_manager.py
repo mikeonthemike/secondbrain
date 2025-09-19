@@ -678,31 +678,191 @@ class VaultManager:
             template="daily_note_template.md"
         )
     
-    def create_moc(self, topic: str, notes: List[str]) -> Optional[str]:
+    def create_moc(self, topic: str, notes: List[str], moc_type: str = "topic", 
+                   depth: int = 2, template: Optional[str] = None) -> Optional[str]:
         """
         Create a Map of Content (MOC) for a topic.
         
         Args:
             topic: Topic name
             notes: List of note titles to include
+            moc_type: Type of MOC (topic, project, daily, resource)
+            depth: Hierarchical depth for organization
+            template: Custom template to use
             
         Returns:
             Path to created MOC, or None if failed
         """
-        content = f"# {topic} - Map of Content\n\n"
+        # Generate structured MOC content
+        content = self._generate_moc_content(topic, notes, moc_type, depth)
         
-        for note in notes:
-            content += f"- [[{note}]]\n"
-        
-        content += "\n## Related Topics\n\n"
-        content += "- \n"
+        # Create metadata for the MOC
+        metadata = {
+            "moc_type": moc_type,
+            "topic": topic,
+            "note_count": len(notes),
+            "depth": depth,
+            "auto_generated": True,
+            "last_updated": datetime.now().isoformat()
+        }
         
         return self.create_note(
             title=f"{topic} - MOC",
             content=content,
             folder_type="mocs",
-            tags=["moc", topic.lower()]
+            tags=["moc", topic.lower(), moc_type],
+            metadata=metadata,
+            template=template
         )
+    
+    def _generate_moc_content(self, topic: str, notes: List[str], 
+                            moc_type: str, depth: int) -> str:
+        """Generate structured MOC content based on type and depth."""
+        content = f"# {topic} - Map of Content\n\n"
+        
+        # Add overview section
+        content += f"## Overview\n\n"
+        content += f"This is a {moc_type} Map of Content for {topic}.\n\n"
+        
+        # Generate content based on MOC type
+        if moc_type == "project":
+            content += self._generate_project_moc_content(topic, notes, depth)
+        elif moc_type == "topic":
+            content += self._generate_topic_moc_content(topic, notes, depth)
+        elif moc_type == "daily":
+            content += self._generate_daily_moc_content(topic, notes, depth)
+        elif moc_type == "resource":
+            content += self._generate_resource_moc_content(topic, notes, depth)
+        else:
+            content += self._generate_generic_moc_content(topic, notes, depth)
+        
+        return content
+    
+    def _generate_project_moc_content(self, topic: str, notes: List[str], depth: int) -> str:
+        """Generate project-specific MOC content."""
+        content = "## Project Overview\n\n"
+        content += f"**Status**: Active\n"
+        content += f"**Start Date**: {datetime.now().strftime('%Y-%m-%d')}\n"
+        content += f"**Notes**: {len(notes)}\n\n"
+        
+        content += "## Goals & Objectives\n\n"
+        content += "- [ ] Define project goals\n"
+        content += "- [ ] Set milestones\n"
+        content += "- [ ] Identify deliverables\n\n"
+        
+        content += "## Timeline & Milestones\n\n"
+        content += "### Phase 1: Planning\n"
+        content += "- [ ] Initial planning\n"
+        content += "- [ ] Resource allocation\n\n"
+        
+        content += "### Phase 2: Execution\n"
+        content += "- [ ] Implementation\n"
+        content += "- [ ] Regular reviews\n\n"
+        
+        content += "## Project Notes\n\n"
+        for note in notes:
+            content += f"- [[{note}]]\n"
+        
+        content += "\n## Resources & References\n\n"
+        content += "- \n\n"
+        
+        content += "## Action Items\n\n"
+        content += "- [ ] \n\n"
+        
+        return content
+    
+    def _generate_topic_moc_content(self, topic: str, notes: List[str], depth: int) -> str:
+        """Generate topic-specific MOC content."""
+        content = "## Core Concepts\n\n"
+        content += "- \n\n"
+        
+        content += "## Related Topics\n\n"
+        content += "- \n\n"
+        
+        content += "## Key Notes\n\n"
+        for note in notes:
+            content += f"- [[{note}]]\n"
+        
+        content += "\n## Supporting Materials\n\n"
+        content += "- \n\n"
+        
+        content += "## Questions to Explore\n\n"
+        content += "- \n\n"
+        
+        content += "## External Resources\n\n"
+        content += "- \n\n"
+        
+        return content
+    
+    def _generate_daily_moc_content(self, topic: str, notes: List[str], depth: int) -> str:
+        """Generate daily/weekly MOC content."""
+        content = "## Time Period\n\n"
+        content += f"**Period**: {topic}\n"
+        content += f"**Notes**: {len(notes)}\n\n"
+        
+        content += "## Key Events\n\n"
+        content += "- \n\n"
+        
+        content += "## Daily Notes\n\n"
+        for note in notes:
+            content += f"- [[{note}]]\n"
+        
+        content += "\n## Tasks & Action Items\n\n"
+        content += "- [ ] \n\n"
+        
+        content += "## Reflections\n\n"
+        content += "- \n\n"
+        
+        content += "## Trends & Patterns\n\n"
+        content += "- \n\n"
+        
+        return content
+    
+    def _generate_resource_moc_content(self, topic: str, notes: List[str], depth: int) -> str:
+        """Generate resource-specific MOC content."""
+        content = "## Resource Categories\n\n"
+        content += "### Books\n"
+        content += "- \n\n"
+        content += "### Articles\n"
+        content += "- \n\n"
+        content += "### Videos\n"
+        content += "- \n\n"
+        content += "### Tools\n"
+        content += "- \n\n"
+        
+        content += "## Resource Notes\n\n"
+        for note in notes:
+            content += f"- [[{note}]]\n"
+        
+        content += "\n## Status Tracking\n\n"
+        content += "### To Read/Review\n"
+        content += "- [ ] \n\n"
+        content += "### In Progress\n"
+        content += "- [ ] \n\n"
+        content += "### Completed\n"
+        content += "- [x] \n\n"
+        
+        return content
+    
+    def _generate_generic_moc_content(self, topic: str, notes: List[str], depth: int) -> str:
+        """Generate generic MOC content."""
+        content = "## Main Topics\n\n"
+        content += "- \n\n"
+        
+        content += "## Related Notes\n\n"
+        for note in notes:
+            content += f"- [[{note}]]\n"
+        
+        content += "\n## Related MOCs\n\n"
+        content += "- \n\n"
+        
+        content += "## External Resources\n\n"
+        content += "- \n\n"
+        
+        content += "## Questions to Explore\n\n"
+        content += "- \n\n"
+        
+        return content
 
     # Enhanced frontmatter helper methods
     def _detect_meeting_type(self, content: str) -> str:

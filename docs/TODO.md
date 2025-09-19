@@ -59,6 +59,10 @@
 - [ ] **Low Priority**: `scripts/performance_optimizer.py` - Vault optimization
 - [ ] **Low Priority**: `scripts/ai_integration.py` - Smart suggestions and linking
 
+
+### Templates
+- [ ] **Top Priority**: improve template front matter
+
 ## 📋 Immediate Next Steps (This Week)
 1. **Email Import System** - Start with Gmail integration
 2. **Web Clipping** - Implement basic web content extraction

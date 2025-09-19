@@ -1,3 +1,86 @@
-
+{
+    "ai_settings": {
+      "openai_api_key": null,
+      "model": "gpt-3.5-turbo",
+      "embedding_model": "all-MiniLM-L6-v2",
+      "confidence_threshold": 0.7,
+      "max_tokens": 1000
+    },
+    "classification": {
+      "enable_ai": true,
+      "fallback_to_rules": true,
+      "learn_from_feedback": true,
+      "batch_size": 10
+    },
+    "content_categories": {
+      "meeting": {
+        "keywords": ["meeting", "call", "conference", "standup", "review", "agenda", "minutes"],
+        "patterns": ["\\d{1,2}:\\d{2}", "am|pm", "agenda", "minutes", "attendees"],
+        "templates": ["meeting_template.md"],
+        "folder": "projects",
+        "priority_keywords": ["urgent", "important", "asap"]
+      },
+      "project": {
+        "keywords": ["project", "milestone", "deliverable", "sprint", "phase", "deadline"],
+        "patterns": ["status", "update", "progress", "deadline", "timeline"],
+        "templates": ["project_template.md"],
+        "folder": "projects",
+        "priority_keywords": ["urgent", "critical", "deadline"]
+      },
+      "action_item": {
+        "keywords": ["action", "task", "todo", "follow-up", "deadline", "urgent"],
+        "patterns": ["\\[ \\]", "\\[x\\]", "todo", "action item", "next step"],
+        "templates": ["action_template.md"],
+        "folder": "projects",
+        "priority_keywords": ["urgent", "asap", "immediately"]
+      },
+      "reference": {
+        "keywords": ["article", "newsletter", "blog", "tutorial", "guide", "resource"],
+        "patterns": ["read more", "learn more", "tutorial", "guide", "reference"],
+        "templates": ["resource_template.md"],
+        "folder": "resources",
+        "priority_keywords": ["important", "must read"]
+      },
+      "idea": {
+        "keywords": ["idea", "thought", "concept", "brainstorm", "innovation"],
+        "patterns": ["what if", "idea", "concept", "brainstorm"],
+        "templates": ["idea_template.md"],
+        "folder": "resources",
+        "priority_keywords": ["breakthrough", "innovative"]
+      },
+      "decision": {
+        "keywords": ["decision", "decided", "chose", "option", "conclusion"],
+        "patterns": ["decided", "chose", "option", "conclusion", "final"],
+        "templates": ["decision_template.md"],
+        "folder": "projects",
+        "priority_keywords": ["critical", "important"]
+      },
+      "area": {
+        "keywords": ["area", "responsibility", "ongoing", "process", "standard"],
+        "patterns": ["ongoing", "process", "standard", "responsibility"],
+        "templates": ["area_template.md"],
+        "folder": "areas",
+        "priority_keywords": ["important", "ongoing"]
+      },
+      "daily": {
+        "keywords": ["daily", "journal", "log", "entry", "today"],
+        "patterns": ["\\d{4}-\\d{2}-\\d{2}", "today", "daily", "journal"],
+        "templates": ["daily_note_template.md"],
+        "folder": "inbox",
+        "priority_keywords": []
+      }
+    },
+    "learning": {
+      "enable_learning": true,
+      "feedback_weight": 0.1,
+      "history_size": 100,
+      "update_frequency": "daily"
+    },
+    "metadata": {
+      "created": "2024-01-01T00:00:00Z",
+      "last_updated": "2024-01-01T00:00:00Z",
+      "version": "1.0.0"
+    }
+  }
 
 
