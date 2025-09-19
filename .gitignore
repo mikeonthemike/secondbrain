@@ -57,3 +57,7 @@ staging/
 
 # Config file
 config/vault_config.json
+
+
+# Test files
+local_working/
