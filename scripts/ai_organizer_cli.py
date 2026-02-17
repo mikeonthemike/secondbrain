@@ -76,6 +76,8 @@ def _analyze_single_file(organizer: AIAutoOrganizer, file_path: str):
         title = Path(file_path).stem
         analysis = organizer.analyze_content_with_ai(content, title)
         
+        print(f"\n📝 Analysis for: {title}")
+        print("=" * 50)
         print(f"Content Type: {analysis['content_type']}")
         print(f"Confidence: {analysis['confidence']:.2f}")
         print(f"Priority: {analysis['priority']}")
@@ -151,6 +153,8 @@ def _organize_single_file(organizer: AIAutoOrganizer, file_path: str):
         title = Path(file_path).stem
         recommendations = organizer.organize_note(file_path, content, title)
         
+        print(f"\n🎯 Organization Recommendations for: {title}")
+        print("=" * 50)
         print(f"Content Type: {recommendations['content_type']}")
         print(f"Confidence: {recommendations['confidence']:.2f}")
         print(f"Suggested Folder: {recommendations['folder_type']}")
