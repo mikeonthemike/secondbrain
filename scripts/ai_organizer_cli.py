@@ -17,16 +17,65 @@ from auto_organizer import AIAutoOrganizer
 
 
 def analyze_note(organizer: AIAutoOrganizer, note_path: str):
-    """Analyze a single note."""
+    """Analyze a single note or all markdown files in a directory."""
+    path = Path(note_path)
+    
+    # Check if path is a directory
+    if path.is_dir():
+        print(f"\n📁 Analyzing all markdown files in directory: {note_path}")
+        print("=" * 60)
+        
+        # Find all markdown files in the directory (recursively)
+        md_files = list(path.rglob("*.md"))
+        if not md_files:
+            print(f"❌ No markdown files found in {note_path}")
+            return None
+        
+        print(f"Found {len(md_files)} markdown files to analyze")
+        
+        results = []
+        for md_file in md_files:
+            print(f"\n📝 Analyzing: {md_file.name}")
+            result = _analyze_single_file(organizer, str(md_file))
+            if result:
+                results.append(result)
+        
+        print(f"\n📊 Analysis Summary:")
+        print("=" * 60)
+        print(f"Total files analyzed: {len(results)}")
+        
+        # Group by content type
+        content_types = {}
+        for result in results:
+            content_type = result['content_type']
+            if content_type not in content_types:
+                content_types[content_type] = 0
+            content_types[content_type] += 1
+        
+        print(f"Content type distribution:")
+        for content_type, count in content_types.items():
+            print(f"  {content_type}: {count} files")
+        
+        return results
+    
+    # Handle single file
+    elif path.is_file():
+        return _analyze_single_file(organizer, note_path)
+    
+    else:
+        print(f"❌ Path not found: {note_path}")
+        return None
+
+
+def _analyze_single_file(organizer: AIAutoOrganizer, file_path: str):
+    """Analyze a single file."""
     try:
-        with open(note_path, 'r', encoding='utf-8') as f:
+        with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        title = Path(note_path).stem
+        title = Path(file_path).stem
         analysis = organizer.analyze_content_with_ai(content, title)
         
-        print(f"\n📝 Analysis for: {title}")
-        print("=" * 50)
         print(f"Content Type: {analysis['content_type']}")
         print(f"Confidence: {analysis['confidence']:.2f}")
         print(f"Priority: {analysis['priority']}")
@@ -38,21 +87,70 @@ def analyze_note(organizer: AIAutoOrganizer, note_path: str):
         return analysis
         
     except Exception as e:
-        print(f"❌ Error analyzing {note_path}: {e}")
+        print(f"❌ Error analyzing {file_path}: {e}")
         return None
 
 
 def organize_note(organizer: AIAutoOrganizer, note_path: str):
-    """Get organization recommendations for a note."""
+    """Get organization recommendations for a note or all markdown files in a directory."""
+    path = Path(note_path)
+    
+    # Check if path is a directory
+    if path.is_dir():
+        print(f"\n🎯 Getting organization recommendations for all markdown files in directory: {note_path}")
+        print("=" * 70)
+        
+        # Find all markdown files in the directory (recursively)
+        md_files = list(path.rglob("*.md"))
+        if not md_files:
+            print(f"❌ No markdown files found in {note_path}")
+            return None
+        
+        print(f"Found {len(md_files)} markdown files to organize")
+        
+        results = []
+        for md_file in md_files:
+            print(f"\n🎯 Organizing: {md_file.name}")
+            result = _organize_single_file(organizer, str(md_file))
+            if result:
+                results.append(result)
+        
+        print(f"\n📊 Organization Summary:")
+        print("=" * 70)
+        print(f"Total files organized: {len(results)}")
+        
+        # Group by suggested folder type
+        folder_types = {}
+        for result in results:
+            folder_type = result['folder_type']
+            if folder_type not in folder_types:
+                folder_types[folder_type] = 0
+            folder_types[folder_type] += 1
+        
+        print(f"Suggested folder distribution:")
+        for folder_type, count in folder_types.items():
+            print(f"  {folder_type}: {count} files")
+        
+        return results
+    
+    # Handle single file
+    elif path.is_file():
+        return _organize_single_file(organizer, note_path)
+    
+    else:
+        print(f"❌ Path not found: {note_path}")
+        return None
+
+
+def _organize_single_file(organizer: AIAutoOrganizer, file_path: str):
+    """Get organization recommendations for a single file."""
     try:
-        with open(note_path, 'r', encoding='utf-8') as f:
+        with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        title = Path(note_path).stem
-        recommendations = organizer.organize_note(note_path, content, title)
+        title = Path(file_path).stem
+        recommendations = organizer.organize_note(file_path, content, title)
         
-        print(f"\n🎯 Organization Recommendations for: {title}")
-        print("=" * 50)
         print(f"Content Type: {recommendations['content_type']}")
         print(f"Confidence: {recommendations['confidence']:.2f}")
         print(f"Suggested Folder: {recommendations['folder_type']}")
@@ -66,7 +164,7 @@ def organize_note(organizer: AIAutoOrganizer, note_path: str):
         return recommendations
         
     except Exception as e:
-        print(f"❌ Error organizing {note_path}: {e}")
+        print(f"❌ Error organizing {file_path}: {e}")
         return None
 
 

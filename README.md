@@ -93,11 +93,11 @@ py second_brain.py --info
 ```bash
 # Analyze and organize content with AI
 # Bash
-python scripts/ai_organizer_cli.py --analyze-vault
+python scripts/ai_organizer_cli.py --analyze "/path/to/vault"
 python scripts/ai_organizer_cli.py --organize-notes --folder inbox
 
 # Windows PowerShell
-py scripts/ai_organizer_cli.py --analyze-vault
+py scripts/ai_organizer_cli.py --analyze "C:\path\to\vault"
 py scripts/ai_organizer_cli.py --organize-notes --folder inbox
 ```
 
